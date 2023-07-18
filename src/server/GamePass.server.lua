@@ -17,13 +17,65 @@ local function FindLevelInstance(Level)
 end
 
 productFunctions[1583311950] = function(reciept,player)
+	
 	local robuxSpent = reciept["CurrencySpent"]
 	local Level = PlayerManager.GetLevel(player)
 	if Level then
-		local instance = FindLevelInstance(Level).Checkpoint
+		local instance = FindLevelInstance(Level+1).Checkpoint
 		PlayerManager.SetLevel(player,Level+1,instance)
+		player:LoadCharacter()
+	else
+		warn("Failed to get Level!")
 	end
 
+	local success, err = pcall(function()
+		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+	end)
+	if success then
+		print('Saved')
+	else
+		warn('Not Saved!**', err)
+	end
+end
+
+productFunctions[1583455553] = function(reciept,player)
+	local robuxSpent = reciept["CurrencySpent"]
+	local success, err = pcall(function()
+		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+	end)
+	if success then
+		print('Saved')
+	else
+		warn('Not Saved!**', err)
+	end
+end
+
+productFunctions[1583455551] = function(reciept,player)
+	local robuxSpent = reciept["CurrencySpent"]
+	local success, err = pcall(function()
+		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+	end)
+	if success then
+		print('Saved')
+	else
+		warn('Not Saved!**', err)
+	end
+end
+
+productFunctions[1583455552] = function(reciept,player)
+	local robuxSpent = reciept["CurrencySpent"]
+	local success, err = pcall(function()
+		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+	end)
+	if success then
+		print('Saved')
+	else
+		warn('Not Saved!**', err)
+	end
+end
+
+productFunctions[1583455550] = function(reciept,player)
+	local robuxSpent = reciept["CurrencySpent"]
 	local success, err = pcall(function()
 		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
 	end)
@@ -37,16 +89,22 @@ end
 productFunctions["coil"] = function(player:Player,character)
 	local coil = ServerStorage.Gear["Gravity Coil"]:Clone()
 	coil.Parent = player.Backpack
+	local startergear = ServerStorage.Gear["Gravity Coil"]:Clone()
+	startergear.Parent = player.StarterGear
 end
 
 productFunctions["sword"] = function(player,character)
 	local sword = ServerStorage.Gear["ClassicSword"]:Clone()
 	sword.Parent = player.Backpack
+	local startergear = ServerStorage.Gear["ClassicSword"]:Clone()
+	startergear.Parent = player.StarterGear
 end
 
 productFunctions["carpet"] = function(player,character)
 	local carpet = ServerStorage.Gear["FlyingCarpet"]:Clone()
 	carpet.Parent = player.Backpack
+	local startergear = ServerStorage.Gear["FlyingCarpet"]:Clone()
+	startergear.Parent = player.StarterGear
 end
 
 productFunctions["admin"] = function(player,character)
@@ -54,8 +112,7 @@ productFunctions["admin"] = function(player,character)
 end
 
 game.Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function(character)
-		local tbl = {}
+	local tbl = {}
 		tbl["coil"]= MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384276)
 		tbl["carpet"] = MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384690)
 		tbl["sword"] = MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384414)
@@ -63,11 +120,11 @@ game.Players.PlayerAdded:Connect(function(player)
 		
 		for name,value in pairs(tbl) do
 			if value or player.Name == "spoopmoop" then
-				productFunctions[name](player,character)
+				productFunctions[name](player,nil)
 			end
 			
 		end
-	end)
+	
 end)
 
 

@@ -23,11 +23,17 @@ function Checkpoint:Touched(hit:BasePart)
 	local plr
 	if humanoid then
 		plr = game.Players:GetPlayerFromCharacter(humanoid.Parent)
-		local currentLevel:number = PlayerManager.GetLevel(plr)
-		if (currentLevel + 1) == Level then
-			PlayerManager.SetLevel(plr, Level, self.SpawnLocation)
-			--self.Instance:Destroy()
+		if plr then
+			local currentLevel:number = PlayerManager.GetLevel(plr)
+			if currentLevel ~= nil then
+				if (currentLevel + 1) == Level then
+					PlayerManager.SetLevel(plr, Level, self.SpawnLocation)
+					
+				end
+			end
+			
 		end
+		
 	else
 		return nil
 	end

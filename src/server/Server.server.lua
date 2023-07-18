@@ -1,8 +1,11 @@
+local BadgeService = game:GetService("BadgeService")
 local ServerStorage = game:GetService("ServerStorage")
+local Teams = game:GetService("Teams")
 local Modules = ServerStorage.Modules
 local ObbyScript = require(Modules.Obby)
 local PlayerManager = require(Modules.PlayerManager)
 local ObbyCourse = workspace:WaitForChild("Obby")
+
 
 PlayerManager.Start()
 
@@ -18,15 +21,10 @@ local function FindLevelInstance(Level)
     return nil
 end
 
-local function RandomSpawn()
-    local spawns = workspace.Spawns:GetChildren()
-    return spawns[math.random(1,#spawns)]
-end
 
 PlayerManager.PlayerAdded:Connect(function(player)
-    player.RespawnLocation = RandomSpawn()
-    player:LoadCharacter()
-    task.wait(1)
+    player.Team = Teams.Escaping
+    BadgeService:AwardBadge(player.UserId,2148764102)
     local Level = PlayerManager.GetLevel(player)
     local location = FindLevelInstance(Level)
     if location then

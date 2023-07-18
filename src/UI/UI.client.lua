@@ -1,7 +1,7 @@
 local player = game.Players.LocalPlayer
 local MPS = game:GetService("MarketplaceService")
 
-local UI = script.Parent.ScreenGui
+local UI = script.Parent:WaitForChild("ScreenGui")
 local Frame = UI.Frame
 local SkipStageButton:TextButton = Frame.TextButton
 local ShopButton:TextButton = SkipStageButton.TextButton

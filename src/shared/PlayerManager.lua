@@ -105,7 +105,13 @@ function PlayerManager.SetLevel(player,total,instance)
 end
 
 function PlayerManager.GetLevel(player:Player)
-	return data[player.UserId].Level
+	local level = data[player.UserId]
+	if level then
+		return level.Level
+	else
+		return nil
+	end
+	
 end
 
 

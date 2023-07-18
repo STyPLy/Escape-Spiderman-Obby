@@ -26,10 +26,13 @@ function Stairs.new(Obby,instance)
 end
 
 function Stairs:Init()
-    for _,instance in pairs(self.Instance:GetChildren()) do
-        instance.Touched:Connect(function()
-            self:Touched(instance)
-        end)
+    for _,instance in pairs(self.Instance:GetDescendants()) do
+        if instance:IsA("BasePart") or instance:IsA("Part") then
+            instance.Touched:Connect(function()
+                self:Touched(instance)
+            end)
+        end
+        
     end
 end
 
