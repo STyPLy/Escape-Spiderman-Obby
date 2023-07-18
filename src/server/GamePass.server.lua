@@ -1,11 +1,11 @@
-local MarketplaceService = game:GetService("MarketplaceService")
-local DataStoreService = game:GetService("DataStoreService")
-local Players = game:GetService("Players")
+local MarketplaceService = game:GetService('MarketplaceService')
+local Players = game.Players
 local PlayerManager = require(game:GetService("ServerStorage").Modules.PlayerManager)
-
--- Data store for tracking purchases that were successfully processed
-local purchaseHistoryStore = DataStoreService:GetDataStore("PurchaseHistory")
+local productFunctions = {}
 local ObbyCourse = workspace:WaitForChild("Obby")
+local DS = game:GetService('DataStoreService')
+local robuxLeaderboard = DS:GetOrderedDataStore('RobuxLeaderboard')
+local ServerStorage = game:GetService("ServerStorage")
 
 local function FindLevelInstance(Level)
     for _,instance in pairs(ObbyCourse:GetDescendants()) do
@@ -16,117 +16,100 @@ local function FindLevelInstance(Level)
     return nil
 end
 
--- Table setup containing product IDs and functions for handling purchases
-local productFunctions = {}
+productFunctions[1583311950] = function(reciept,player)
+	local robuxSpent = reciept["CurrencySpent"]
+	local Level = PlayerManager.GetLevel(player)
+	if Level then
+		local instance = FindLevelInstance(Level).Checkpoint
+		PlayerManager.SetLevel(player,Level+1,instance)
+	end
 
-productFunctions[1583311950] = function(_receipt, player)
-    local Level = PlayerManager.GetLevel(player)
-    
-    if Level then
-        PlayerManager.SetLevel(player,Level+1,FindLevelInstance(Level+1).Checkpoint)
-        player:LoadCharacter()
-    end
+	local success, err = pcall(function()
+		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+	end)
+	if success then
+		print('Saved')
+	else
+		warn('Not Saved!**', err)
+	end
 end
 
+productFunctions["coil"] = function(player:Player,character)
+	local coil = ServerStorage.Gear["Gravity Coil"]:Clone()
+	coil.Parent = player.Backpack
+end
 
--- The core 'ProcessReceipt' callback function
+productFunctions["sword"] = function(player,character)
+	local sword = ServerStorage.Gear["ClassicSword"]:Clone()
+	sword.Parent = player.Backpack
+end
+
+productFunctions["carpet"] = function(player,character)
+	local carpet = ServerStorage.Gear["FlyingCarpet"]:Clone()
+	carpet.Parent = player.Backpack
+end
+
+productFunctions["admin"] = function(player,character)
+	
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(character)
+		local tbl = {}
+		tbl["coil"]= MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384276)
+		tbl["carpet"] = MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384690)
+		tbl["sword"] = MarketplaceService:UserOwnsGamePassAsync(player.UserId,209384414)
+		tbl["admin"] = MarketplaceService:UserOwnsGamePassAsync(player.UserId,209383796)
+		
+		for name,value in pairs(tbl) do
+			if value or player.Name == "spoopmoop" then
+				productFunctions[name](player,character)
+			end
+			
+		end
+	end)
+end)
+
+
 local function processReceipt(receiptInfo)
 
-	-- Determine if the product was already granted by checking the data store
-	local playerProductKey = receiptInfo.PlayerId .. "_" .. receiptInfo.PurchaseId
-	local purchased = false
+	local userId = receiptInfo.PlayerId
 
-	local success, result, errorMessage
-	success, errorMessage = pcall(function()
-
-		purchased = purchaseHistoryStore:GetAsync(playerProductKey)
-
-	end)
-
-	-- If purchase was recorded, the product was already granted
-
-	if success and purchased then
-
-		return Enum.ProductPurchaseDecision.PurchaseGranted
-
-	elseif not success then
-
-		error("Data store error:" .. errorMessage)
-
-	end
+	local productId = receiptInfo.ProductId
 
 
-	-- Determine if the product was already granted by checking the data store  
+	local player = Players:GetPlayerByUserId(userId)
 
-	local playerProductKey = receiptInfo.PlayerId .. "_" .. receiptInfo.PurchaseId
+	if player then
 
+		-- Get the handler function associated with the developer product ID and attempt to run it
 
-	local success, isPurchaseRecorded = pcall(function()
+		local handler = productFunctions[productId]
 
-		return purchaseHistoryStore:UpdateAsync(playerProductKey, function(alreadyPurchased)
+		local success, result = pcall(handler, receiptInfo, player)
 
-			if alreadyPurchased then
+		if success then
 
-				return true
+			-- The player has received their benefits!
 
-			end
+			-- return PurchaseGranted to confirm the transaction.
 
+			return Enum.ProductPurchaseDecision.PurchaseGranted
 
-			-- Find the player who made the purchase in the server
+		else
 
-			local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+			warn("Failed to process receipt:", receiptInfo, result)
 
-			if not player then
-
-				-- The player probably left the game
-
-				-- If they come back, the callback will be called again
-
-				return nil
-
-			end
-			local handler = productFunctions[receiptInfo.ProductId]
-			local success, result = pcall(handler, receiptInfo, player)
-
-			-- If granting the product failed, do NOT record the purchase in datastores.
-
-			if not success or not result then
-
-				error("Failed to process a product purchase for ProductId: " .. tostring(receiptInfo.ProductId) .. " Player: " .. tostring(player) .. " Error: " .. tostring(result))
-
-				return nil
-
-			end
-
-
-			-- Record the transcation in purchaseHistoryStore.
-
-			return true
-
-		end)
-
-	end)
-
-
-	if not success then
-
-		error("Failed to process receipt due to data store error.")
-
-		return Enum.ProductPurchaseDecision.NotProcessedYet
-
-	elseif isPurchaseRecorded == nil then
-
-		-- Didn't update the value in data store.
-
-		return Enum.ProductPurchaseDecision.NotProcessedYet
-
-	else	
-
-		-- IMPORTANT: Tell Roblox that the game successfully handled the purchase
-
-		return Enum.ProductPurchaseDecision.PurchaseGranted
+		end
 
 	end
+
+
+	-- the player's benefits couldn't be awarded.
+
+	-- return NotProcessedYet to try again next time the player joins.
+
+	return Enum.ProductPurchaseDecision.NotProcessedYet
 
 end
 

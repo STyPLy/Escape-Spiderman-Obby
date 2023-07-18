@@ -15,6 +15,12 @@
       }
     },
 
+    "StarterGui": {
+      
+      "$path": "src/UI"
+      
+    },
+
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Player": {

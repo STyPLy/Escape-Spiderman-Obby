@@ -28,10 +28,9 @@ function Checkpoint:Touched(hit:BasePart)
 	end
 	
 	local currentLevel:number = PlayerManager.GetLevel(plr)
-	if currentLevel < Level then
+	if (currentLevel + 1) == Level then
 		PlayerManager.SetLevel(plr, Level, self.SpawnLocation)
 		--self.Instance:Destroy()
-		
 	end
 	
 end

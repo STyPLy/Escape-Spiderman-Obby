@@ -24,18 +24,17 @@ local function RandomSpawn()
 end
 
 PlayerManager.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Wait()
-    local char = player.Character
-    local HRP = char:FindFirstChild("HumanoidRootPart")
-    if HRP then
-        HRP.CFrame = RandomSpawn().CFrame
-    end
+    player.RespawnLocation = RandomSpawn()
+    player:LoadCharacter()
     task.wait(1)
     local Level = PlayerManager.GetLevel(player)
     local location = FindLevelInstance(Level)
     if location then
         player.RespawnLocation = location.Checkpoint
         player:LoadCharacter()
+    else
+        
+        
     end
     
 end)
