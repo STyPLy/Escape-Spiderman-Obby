@@ -1,4 +1,5 @@
 local BadgeService = game:GetService("BadgeService")
+local PhysicsService = game:GetService("PhysicsService")
 local ServerStorage = game:GetService("ServerStorage")
 local Teams = game:GetService("Teams")
 local Modules = ServerStorage.Modules
@@ -6,6 +7,9 @@ local ObbyScript = require(Modules.Obby)
 local PlayerManager = require(Modules.PlayerManager)
 local ObbyCourse = workspace:WaitForChild("Obby")
 
+-- Disable Player Collision
+PhysicsService:RegisterCollisionGroup("Player")
+PhysicsService:CollisionGroupSetCollidable("Player", "Player", false)
 
 PlayerManager.Start()
 
