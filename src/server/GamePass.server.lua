@@ -29,7 +29,12 @@ productFunctions[1583311950] = function(reciept,player)
 	end
 
 	local success, err = pcall(function()
-		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+		local totalRobuxSpent = robuxLeaderboard:GetAsync(player.UserId)
+		if totalRobuxSpent then
+			robuxLeaderboard:SetAsync(player.UserId, totalRobuxSpent + robuxSpent)
+		else
+			robuxLeaderboard:SetAsync(player.UserId, robuxSpent)
+		end
 	end)
 	if success then
 		print('Saved')
@@ -41,7 +46,12 @@ end
 productFunctions[1583455553] = function(reciept,player)
 	local robuxSpent = reciept["CurrencySpent"]
 	local success, err = pcall(function()
-		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+		local totalRobuxSpent = robuxLeaderboard:GetAsync(player.UserId)
+		if totalRobuxSpent then
+			robuxLeaderboard:SetAsync(player.UserId, totalRobuxSpent + robuxSpent)
+		else
+			robuxLeaderboard:SetAsync(player.UserId, robuxSpent)
+		end
 	end)
 	if success then
 		print('Saved')
@@ -53,7 +63,12 @@ end
 productFunctions[1583455551] = function(reciept,player)
 	local robuxSpent = reciept["CurrencySpent"]
 	local success, err = pcall(function()
-		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+		local totalRobuxSpent = robuxLeaderboard:GetAsync(player.UserId)
+		if totalRobuxSpent then
+			robuxLeaderboard:SetAsync(player.UserId, totalRobuxSpent + robuxSpent)
+		else
+			robuxLeaderboard:SetAsync(player.UserId, robuxSpent)
+		end
 	end)
 	if success then
 		print('Saved')
@@ -65,7 +80,13 @@ end
 productFunctions[1583455552] = function(reciept,player)
 	local robuxSpent = reciept["CurrencySpent"]
 	local success, err = pcall(function()
-		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+		local totalRobuxSpent = robuxLeaderboard:GetAsync(player.UserId)
+		if totalRobuxSpent then
+			robuxLeaderboard:SetAsync(player.UserId, totalRobuxSpent + robuxSpent)
+		else
+			robuxLeaderboard:SetAsync(player.UserId, robuxSpent)
+		end
+		
 	end)
 	if success then
 		print('Saved')
@@ -77,7 +98,12 @@ end
 productFunctions[1583455550] = function(reciept,player)
 	local robuxSpent = reciept["CurrencySpent"]
 	local success, err = pcall(function()
-		robuxLeaderboard:SetAsync(player.UserId, robuxLeaderboard:GetAsync(player.UserId) + robuxSpent)
+		local totalRobuxSpent = robuxLeaderboard:GetAsync(player.UserId)
+		if totalRobuxSpent then
+			robuxLeaderboard:SetAsync(player.UserId, totalRobuxSpent + robuxSpent)
+		else
+			robuxLeaderboard:SetAsync(player.UserId, robuxSpent)
+		end
 	end)
 	if success then
 		print('Saved')
